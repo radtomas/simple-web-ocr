@@ -1,5 +1,18 @@
-<form method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Submit</button>
-</form>
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'web/style.css' %}">
+
+<div class="ocr-container">
+  <form method="post" class="ocr-form">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Submit</button>
+  </form>
+
+  {% if image %}
+    <label>Image: {{ image.url }}</label>
+    <p class="ocr-result">
+      <textarea readonly>{{ image.content }}</textarea>
+    </p>
+  {% endif %}
+</div>

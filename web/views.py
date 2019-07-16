@@ -1,8 +1,8 @@
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 
-from web.forms import ImageForm
+from .forms import ImageForm
+from .utils import ImageProcess
 
 
 class IndexView(View):
@@ -15,9 +15,15 @@ class IndexView(View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        context = {
+            'form': form
+        }
         if form.is_valid():
-            print(form)
+            image_process = ImageProcess(
+                form.cleaned_data['url'],
+                form.cleaned_data['language'],
+                form.cleaned_data['enforce_process']
+            )
+            context['image'] = image_process.process_image()
 
-            return render(request, self.template_name, {'form': form})
-
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, context)
