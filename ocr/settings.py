@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'web'
+
+    'rest_framework',
+    'web',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -123,3 +126,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
+
+# os env variables
+CELERY_BACKEND = os.environ.get('CELERY_BACKEND', 'redis://localhost:6379/0')
+CELERY_BROKER = os.environ.get('CELERY_BROKER', 'redis://localhost:6379/0')
+
+# custome settings
+APPEND_SLASH = False

@@ -7,7 +7,7 @@ from .utils import ImageProcess
 
 class IndexView(View):
     form_class = ImageForm
-    template_name = 'index.html'
+    template_name = 'ocr_form.html'
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()

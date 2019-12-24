@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{%  block content %}
+<div class="ocr-container">
+  <form method="post" class="ocr-form" id="ocrForm">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Submit</button>
+  </form>
+
+  <button onclick="make_api_requst()">Make api request</button>
+
+  {% if image %}
+    <label>Image: {{ image.url }}</label>
+    <p class="ocr-result">
+      <textarea readonly>{{ image.content }}</textarea>
+    </p>
+  {% endif %}
+</div>
+<script>
+const CSRF_TOKEN = "{{ csrf_token }}";
+
+function make_api_requst() {
+    console.log('make request start');
+    console.log('csrf token:', CSRF_TOKEN);
+    const payload = {
+        url: $("#id_url").value,
+        language: $("#id_language").value,
+        enforceProcess: $("#id_enforce_process").value,
+    };
+    console.log('payload', payload);
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8000/api/ocr-process/",
+        headers: {
+            'X-CSRFToken': CSRF_TOKEN,
+            'Content-Type': 'application/json'
+        },
+        data: payload,
+        success: (response) => {
+            console.log('success:', response)
+        }
+    })
+}
+</script>
+{% endblock %}
