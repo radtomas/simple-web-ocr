@@ -5,30 +5,24 @@
   <form method="post" class="ocr-form" id="ocrForm">
     {% csrf_token %}
     {{ form }}
-    <button type="submit">Submit</button>
   </form>
 
-  <button onclick="make_api_requst()">Make api request</button>
+  <button onclick="make_api_request()">Make api request</button>
 
-  {% if image %}
-    <label>Image: {{ image.url }}</label>
-    <p class="ocr-result">
-      <textarea readonly>{{ image.content }}</textarea>
-    </p>
-  {% endif %}
+  <p class="ocr-result">
+    <textarea id="responseContent" readonly>{{ image.content }}</textarea>
+  </p>
 </div>
 <script>
 const CSRF_TOKEN = "{{ csrf_token }}";
 
-function make_api_requst() {
-    console.log('make request start');
-    console.log('csrf token:', CSRF_TOKEN);
+function make_api_request() {
     const payload = {
-        url: $("#id_url").value,
-        language: $("#id_language").value,
-        enforceProcess: $("#id_enforce_process").value,
+        url: $("#id_url").val(),
+        language: $("#id_language").val(),
+        enforceProcess: $("#id_enforce_process").is(':checked')
     };
-    console.log('payload', payload);
+
     $.ajax({
         type: "POST",
         url: "http://localhost:8000/api/ocr-process/",
@@ -36,10 +30,16 @@ function make_api_requst() {
             'X-CSRFToken': CSRF_TOKEN,
             'Content-Type': 'application/json'
         },
-        data: payload,
+        data: JSON.stringify(payload),
         success: (response) => {
-            console.log('success:', response)
-        }
+            console.log('success:', response);
+            $("#responseContent").val(response.content);
+        },
+        error: (err) => {
+            console.log(err)
+            alert(JSON.stringify(err.responseJSON));
+        },
+        dataType: "json"
     })
 }
 </script>

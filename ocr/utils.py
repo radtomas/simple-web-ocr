@@ -8,12 +8,15 @@ import PIL
 from django.conf import settings
 from pytesseract import pytesseract
 
-from .models import Image
+from web.models import Image
 
 
 class ImageProcess:
 
     def __init__(self, url, language, enforce=False):
+        if not url or not language:
+            raise TypeError
+
         self.image_instance, created = Image.objects.get_or_create(
             url=url,
             language=language

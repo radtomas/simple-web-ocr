@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 
 from .forms import ImageForm
-from .utils import ImageProcess
+from ocr.utils import ImageProcess
 
 
 class IndexView(View):
