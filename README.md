@@ -8,6 +8,9 @@ install requirements
 pip install -r requirements.txt
 
 TODO:
-1. add api
-2. add celery
-3. pep8
+1. add api - done
+2. add celery - done
+3. rewrite web example(add laoder)
+4. heroku setup
+5. pep8
+6. maybe tests xD

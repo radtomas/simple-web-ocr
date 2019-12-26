@@ -9,20 +9,45 @@
 
   <button onclick="make_api_request()">Make api request</button>
 
-  <p class="ocr-result">
+  <div class="loader" id="loader"></div>
+
+  <div class="ocr-result" id="ocrResult">
+    <div class="task-id">Task id: <span id="taskId"></span></div>
     <textarea id="responseContent" readonly>{{ image.content }}</textarea>
-  </p>
+  </div>
 </div>
 <script>
 const CSRF_TOKEN = "{{ csrf_token }}";
 
-function make_api_request() {
-    const payload = {
-        url: $("#id_url").val(),
-        language: $("#id_language").val(),
-        enforceProcess: $("#id_enforce_process").is(':checked')
-    };
+function set_content(content) {
+    $("#loader").hide();
+    $("#ocrResult").show();
+    $("#responseContent").val(content);
+}
 
+function get_task_result(task_id) {
+    $.ajax({
+        type: "GET",
+        url: `http://localhost:8000/api/ocr-process/${task_id}/`,
+        headers: {
+            'X-CSRFToken': CSRF_TOKEN,
+            'Content-Type': 'application/json'
+        },
+        success: (response) => {
+            if (response.state === "PENDING")
+                setTimeout(() => {get_task_result(task_id)}, 2000);
+            else set_content(response.content);
+        },
+        error: (err) => {
+            console.log(err)
+            alert(JSON.stringify(err.responseJSON));
+        },
+        dataType: "json"
+    })
+}
+
+function make_start_task_request(payload) {
+    $("#loader").show();
     $.ajax({
         type: "POST",
         url: "http://localhost:8000/api/ocr-process/",
@@ -32,8 +57,8 @@ function make_api_request() {
         },
         data: JSON.stringify(payload),
         success: (response) => {
-            console.log('success:', response);
-            $("#responseContent").val(response.content);
+            $("#taskId").text(response.task_id);
+            get_task_result(response.task_id)
         },
         error: (err) => {
             console.log(err)
@@ -42,5 +67,22 @@ function make_api_request() {
         dataType: "json"
     })
 }
+
+function make_api_request() {
+    const payload = {
+        url: $("#id_url").val(),
+        language: $("#id_language").val(),
+        enforceProcess: $("#id_enforce_process").is(':checked')
+    };
+
+    make_start_task_request(payload);
+}
+
+function initial_setup() {
+    $("#loader").hide();
+    $("#ocrResult").hide();
+}
+
+initial_setup();
 </script>
 {% endblock %}
