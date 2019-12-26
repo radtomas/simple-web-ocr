@@ -16,4 +16,4 @@ class Image(models.Model):
     language = models.CharField(max_length=5, default=LANG_POL)
 
     def __str__(self):
-        return f'{self.id} - {self.original_url}'
+        return f'{self.id} - {self.url}'

@@ -2,12 +2,12 @@ from django.shortcuts import render
 from django.views import View
 
 from .forms import ImageForm
-from .utils import ImageProcess
+from ocr.utils import ImageProcess
 
 
 class IndexView(View):
     form_class = ImageForm
-    template_name = 'index.html'
+    template_name = 'ocr_form.html'
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
