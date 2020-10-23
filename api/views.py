@@ -1,10 +1,35 @@
+from time import sleep
+
 from celery import signature
+from celery.app.control import Inspect
 from celery.result import AsyncResult
+from image.tasks import add
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
+from api.pagination import StandardResultsSetPagination
+from api.serializers import ImageSerializer
+from image.models import Image
 from ocr.celery import app
+
+
+class ImageViewSet(ModelViewSet):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+    pagination_class = StandardResultsSetPagination
+
+
+class TestTaskRun(APIView):
+    def get(self, request, format=None):
+        res = add.delay(4, 4)
+        while not res.ready():
+            print(res.ready())
+            sleep(1)
+        i = Inspect()
+        print(i)
+        return Response(status=status.HTTP_200_OK)
 
 
 class OCRProcessView(APIView):
@@ -23,7 +48,7 @@ class OCRProcessView(APIView):
         if error_dict:
             return Response(error_dict, status=status.HTTP_400_BAD_REQUEST)
 
-        sig = signature('api.tasks.process_image_task', args=[{
+        sig = signature('image.tasks.process_image_task', args=[{
             'url': request.data.get('url'),
             'language': request.data.get('language'),
             'enforce': request.data.get('enforceProcess')

@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    volumes:
+      - .:/code
+    command: sh -c ". entrypoint.sh"
+    environment:
+      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8001:8000"
+    depends_on:
+      - redis
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  celery:
+    build: .
+    command: celery -A ocr worker --loglevel=DEBUG
+    environment:
+      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+  celery-beat:
+    build: .
+    command: celery -A ocr beat --loglevel=DEBUG
+    environment:
+      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER=redis://redis:6379/0
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+  flower:
+    image: mher/flower:0.9.5
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    ports:
+      - 5555:5555
+    depends_on:
+      - redis
+      - celery
+
+networks:
+  default:
+    driver: bridge

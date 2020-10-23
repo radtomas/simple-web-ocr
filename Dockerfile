@@ -8,7 +8,7 @@ RUN apk add --upgrade --no-cache \
 	tesseract-ocr
 
 RUN mkdir /code
-WORKDIR /code
-COPY requirements.txt /code/
-RUN pip install -r requirements.txt
 COPY . /code/
+WORKDIR /code
+RUN pip install -r requirements.txt
+RUN chmod +x entrypoint.sh

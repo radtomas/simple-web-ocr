@@ -1,6 +1,6 @@
 from celery import task
 
-from ocr.utils import ImageProcess
+from image.utils import ImageProcess
 
 
 @task

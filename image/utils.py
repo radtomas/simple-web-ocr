@@ -8,7 +8,7 @@ import PIL
 from django.conf import settings
 from pytesseract import pytesseract
 
-from web.models import Image
+from image.models import Image
 
 
 class ImageProcess:
