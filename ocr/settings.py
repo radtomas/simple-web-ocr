@@ -128,6 +128,7 @@ STATICFILES_DIRS = [
 ]
 
 # os env variables
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8001")
 CELERY_BACKEND = os.environ.get('CELERY_BACKEND', 'redis://localhost:6379/0')
 CELERY_BROKER = os.environ.get('CELERY_BROKER', 'redis://localhost:6379/0')
 INITIAL_ADMIN_PASSWORD = os.environ.get('INITIAL_ADMIN_PASSWORD', None)
