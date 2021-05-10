@@ -130,6 +130,8 @@ STATICFILES_DIRS = [
 # os env variables
 CELERY_BACKEND = os.environ.get('CELERY_BACKEND', 'redis://localhost:6379/0')
 CELERY_BROKER = os.environ.get('CELERY_BROKER', 'redis://localhost:6379/0')
+INITIAL_ADMIN_PASSWORD = os.environ.get('INITIAL_ADMIN_PASSWORD', None)
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', None)
 
 # custome settings
 APPEND_SLASH = False
