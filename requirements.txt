@@ -1,4 +1,4 @@
-Django>=2.2.4
+Django==2.2.4
 pytesseract==0.2.7
 celery==4.4.0
 redis==3.3.11
