@@ -1,6 +1,8 @@
 version: "3.8"
 
 services:
+  redis:
+    image: "redis:alpine"
   api:
     build: .
     volumes:
@@ -14,13 +16,9 @@ services:
       - "8001:8000"
     depends_on:
       - redis
-  redis:
-    image: "redis:alpine"
-    ports:
-      - "6379:6379"
   celery:
     build: .
-    command: celery -A ocr worker --loglevel=DEBUG
+    command: celery -A ocr worker --loglevel=DEBUG -Q ocr
     environment:
       - CELERY_BACKEND=redis://redis:6379/0
       - CELERY_BROKER=redis://redis:6379/0
@@ -29,6 +27,7 @@ services:
       - .:/code
     depends_on:
       - redis
+      - api
   celery-beat:
     build: .
     command: celery -A ocr beat --loglevel=DEBUG
@@ -38,16 +37,20 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - .:/code
+    restart: on-failure
     depends_on:
       - redis
+      - api
   flower:
-    image: mher/flower:0.9.5
+    build: .
+    command: flower -A ocr --port=5555
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
     ports:
       - 5555:5555
     depends_on:
       - redis
+      - api
       - celery
 
 networks:

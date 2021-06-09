@@ -13,7 +13,7 @@ app.conf.update(
     result_backend=settings.CELERY_BACKEND,
     broker_url=settings.CELERY_BROKER,
     task_routes={
-        'ocr.tasks.*': {'queue': 'ocr'},
+        'image.tasks.*': {'queue': 'ocr'},
     },
     default_queue='ocr',
     task_serializer='json',
