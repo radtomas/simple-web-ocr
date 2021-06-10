@@ -10,7 +10,7 @@ class Command(BaseCommand):
         if not email:
             self.stderr.write("No admin email!")
             self.stderr.write("Create admin with default email!")
-            admin = "admin@admin.com"
+            email = "admin@admin.com"
         password = settings.INITIAL_ADMIN_PASSWORD
         if not password:
             self.stderr.write("No admin password!")

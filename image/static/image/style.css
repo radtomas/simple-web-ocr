@@ -4,10 +4,13 @@
     height: 100%;
 }
 
+.ocr-form {
+    width: 30%;
+}
+
 .ocr-container .ocr-form {
     display: flex;
     flex-direction: column;
-    width: 30%;
 }
 
 .ocr-result {

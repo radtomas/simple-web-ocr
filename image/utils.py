@@ -6,6 +6,7 @@ from urllib import request
 
 import PIL
 from django.conf import settings
+from django.core.exceptions import FieldError
 from pytesseract import pytesseract
 
 from image.models import Image
@@ -13,20 +14,16 @@ from image.models import Image
 
 class ImageProcess:
 
-    def __init__(self, url, language, enforce=False):
-        if not url or not language:
-            raise TypeError
-
-        self.image_instance, created = Image.objects.get_or_create(
-            url=url,
-            language=language
-        )
+    def __init__(self, context, enforce=False):
+        self.context = context
+        if not self.context.get("url") or not self.context.get("language"):
+            raise FieldError("Missing url or language!")
         self.enforce_process = enforce
 
     def download_image(self):
-        with request.urlopen(self.image_instance.url) as response:
+        with request.urlopen(self.context("url")) as response:
             encoded_data = b64encode(response.read())
-            self.image_instance.encoded_file = encoded_data.decode()
+            self.context["encoded_file"] = encoded_data.decode()
 
     def prepare_enviroment(self):
         if not os.path.exists(settings.TESSERACT_DATA_DIR):
@@ -40,19 +37,18 @@ class ImageProcess:
 
     def get_text_from_image(self):
         image_string = io.BytesIO(
-            b64decode(self.image_instance.encoded_file)
+            b64decode(self.context.get("encoded_file"))
         )
         image = PIL.Image.open(image_string)
         return pytesseract.image_to_string(
             image,
-            lang=self.image_instance.language
+            lang=self.context.get("language")
         )
 
     def process_image(self):
         self.prepare_enviroment()
-        if not self.image_instance.encoded_file:
+        if not self.context.get("encoded_file"):
             self.download_image()
-        if not self.image_instance.content or self.enforce_process:
-            self.image_instance.content = self.get_text_from_image()
-            self.image_instance.save()
-        return self.image_instance
+        if not self.context.get("content") or self.enforce_process:
+            self.context["content"] = self.get_text_from_image()
+        return self.context

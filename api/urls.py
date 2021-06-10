@@ -10,8 +10,8 @@ urlpatterns = [
     path("", include(router.urls)),
     path('api-auth/', include('rest_framework.urls')),
     path('test-task/', views.TestTaskRun.as_view()),
-    path('ocr-process/', views.OCRProcessView.as_view(), name="ocr_process"),
-    path('ocr-process/<str:task_id>/', views.OCRProcessView.as_view(), name="ocr_process")
+    path('ocr-process/', views.OCRProcessAPIView.as_view(), name="ocr_process"),
+    path('ocr-process/<str:image_id>/', views.OCRProcessAPIView.as_view(), name="ocr_process")
 ]
 
 

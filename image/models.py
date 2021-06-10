@@ -14,6 +14,16 @@ class Image(models.Model):
     encoded_file = models.TextField(default='')
     url = models.TextField(default='')
     language = models.CharField(max_length=5, default=LANG_PL)
+    task_id = models.CharField(max_length=40, null=True, blank=True)
 
     def __str__(self):
         return f'{self.id} - {self.url}'
+
+    @property
+    def process_context(self):
+        return {
+            "content": self.content,
+            "encoded_file": self.encoded_file,
+            "url": self.url,
+            "language": self.language,
+        }
